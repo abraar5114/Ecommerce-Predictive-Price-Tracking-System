@@ -32,10 +32,7 @@
                 <h2>📊 My Tracked Products</h2>
                 <p>Prices update automatically every 6 hours. No manual checking needed!</p>
             </div>
-            <div class="dashboard-actions">
-                <a href="/update-now" class="btn btn-update">🔄 Update Now</a>
-                <a href="/" class="btn btn-primary">+ Add Product</a>
-            </div>
+            <a href="/" class="btn btn-primary" style="width:auto;">+ Add Product</a>
         </div>
 
         {% if not products %}
@@ -104,11 +101,12 @@
                     {% if product.prediction %}
                     🤖 {{ product.prediction.suggestion }}
                     {% else %}
-                    🤖 ⏳ Need more data — click Update Now or check back after 6 hours!
+                    🤖 ⏳ Need more data — click Update to get latest price!
                     {% endif %}
                 </div>
 
                 <div class="product-actions">
+                    <a href="/update-now/{{ product.id }}" class="btn btn-update">🔄 Update</a>
                     <a href="/product/{{ product.id }}" class="btn btn-view">📊 View Details</a>
                     <a href="/delete/{{ product.id }}" class="btn btn-delete"
                     onclick="return confirm('Delete {{ product.name }}?')">🗑️ Delete</a>
