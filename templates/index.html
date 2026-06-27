@@ -31,69 +31,97 @@
         <div class="alert alert-error">⚠️ {{ error }}</div>
         {% endif %}
 
-        <div class="page-title">
-            <h2>Track Prices. Save Money. Buy Smart.</h2>
-            <p>Compare prices across Amazon, Flipkart and Nykaa — track 24/7!</p>
-        </div>
+        {% if success %}
+        <div class="alert alert-success">✅ {{ success }}</div>
+        {% endif %}
 
-        <div class="options-grid">
+        <div class="home-container">
 
-            <div class="option-card">
-                <div class="option-header">
-                    <span class="option-icon">🔍</span>
-                    <div>
-                        <h3>Search by Product Name</h3>
-                        <p>We compare prices across all 3 sites automatically</p>
+            <!-- Left Side — Info -->
+            <div class="home-info">
+                <h2>Track Any Product Price Automatically</h2>
+                <p>Paste a product URL from Amazon, Flipkart or Nykaa — we handle everything else!</p>
+
+                <div class="how-it-works">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <div>
+                            <h4>Paste Product URL</h4>
+                            <p>Copy URL from Amazon, Flipkart or Nykaa</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <div>
+                            <h4>Set Target Price</h4>
+                            <p>Tell us at what price you want to buy</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <div>
+                            <h4>We Track It 24/7</h4>
+                            <p>Price checked every 6 hours automatically</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">4</span>
+                        <div>
+                            <h4>Get Email Alert</h4>
+                            <p>We notify you when price drops or hits target</p>
+                        </div>
                     </div>
                 </div>
-                <form action="/search" method="POST">
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" name="product_name" placeholder="e.g. iPhone 15, Samsung TV, Shampoo" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Target Price (₹)</label>
-                        <input type="number" name="target_price" placeholder="e.g. 25000" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Your Email</label>
-                        <input type="email" name="email" placeholder="e.g. yourname@gmail.com" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">🔍 Search & Compare Prices</button>
-                </form>
-            </div>
 
-            <div class="or-divider"><span>OR</span></div>
-
-            <div class="option-card">
-                <div class="option-header">
-                    <span class="option-icon">🔗</span>
-                    <div>
-                        <h3>Paste Product URL</h3>
-                        <p>Already found the product? Paste the URL directly!</p>
+                <div class="supported-sites">
+                    <p>Supported Sites:</p>
+                    <div class="site-badges">
+                        <span class="site-badge amazon">🟠 Amazon</span>
+                        <span class="site-badge flipkart">🔵 Flipkart</span>
+                        <span class="site-badge nykaa">🩷 Nykaa</span>
                     </div>
                 </div>
-                <form action="/track-url" method="POST">
-                    <div class="form-group">
-                        <label>Product URL</label>
-                        <input type="url" name="product_url" placeholder="https://www.amazon.in/product..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>Target Price (₹)</label>
-                        <input type="number" name="target_price" placeholder="e.g. 25000" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Your Email</label>
-                        <input type="email" name="email" placeholder="e.g. yourname@gmail.com" required>
-                    </div>
-                    <button type="submit" class="btn btn-secondary">🔗 Track This Product</button>
-                </form>
+            </div>
+
+            <!-- Right Side — Form -->
+            <div class="home-form">
+                <div class="form-card">
+                    <h3>🔗 Start Tracking</h3>
+                    <p>Paste any product URL below</p>
+
+                    <form action="/track-url" method="POST" id="trackForm">
+                        <div class="form-group">
+                            <label>Product URL</label>
+                            <input type="url" name="product_url"
+                            placeholder="https://www.amazon.in/product..."
+                            required>
+                            <small>Supports Amazon, Flipkart and Nykaa</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Price (₹)</label>
+                            <input type="number" name="target_price"
+                            placeholder="e.g. 25000"
+                            required>
+                            <small>We alert you when price reaches this</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Email</label>
+                            <input type="email" name="email"
+                            placeholder="e.g. yourname@gmail.com"
+                            required>
+                            <small>We send price drop alerts here</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="trackBtn">
+                            🚀 Start Tracking
+                        </button>
+                    </form>
+                </div>
             </div>
 
         </div>
 
+        <!-- Features -->
         <div class="features-section">
-            <h3>Why Use PriceTrack AI?</h3>
             <div class="features-grid">
                 <div class="feature-card">
                     <span class="feature-icon">🤖</span>
@@ -101,19 +129,19 @@
                     <p>AI predicts if price will go up or down in next 7 days</p>
                 </div>
                 <div class="feature-card">
-                    <span class="feature-icon">💰</span>
-                    <h4>Price Comparison</h4>
-                    <p>Automatically compares Amazon, Flipkart and Nykaa</p>
+                    <span class="feature-icon">📉</span>
+                    <h4>Drop Alerts</h4>
+                    <p>Instant email when price drops 20% or hits your target</p>
                 </div>
                 <div class="feature-card">
-                    <span class="feature-icon">🔔</span>
-                    <h4>Smart Alerts</h4>
-                    <p>Get email alert when price drops or hits your target</p>
+                    <span class="feature-icon">📊</span>
+                    <h4>Price History</h4>
+                    <p>Visual chart showing price trends over time</p>
                 </div>
                 <div class="feature-card">
                     <span class="feature-icon">⏰</span>
                     <h4>Auto Tracking</h4>
-                    <p>Prices updated every 6 hours automatically!</p>
+                    <p>Prices checked every 6 hours — no manual work!</p>
                 </div>
             </div>
         </div>
@@ -124,6 +152,14 @@
         <p>🛒 Ecommerce Predictive Price Tracking System — 2024-2025</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.getElementById('trackForm').addEventListener('submit', function() {
+            const btn = document.getElementById('trackBtn');
+            btn.textContent = '⏳ Fetching product details...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+        });
+    </script>
+
 </body>
 </html>
