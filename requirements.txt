@@ -1,0 +1,11 @@
+flask
+requests
+beautifulsoup4
+pandas
+numpy
+scikit-learn
+matplotlib
+schedule
+cloudscraper
+gunicorn
+python-dotenv

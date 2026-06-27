@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Predictive Price Tracking System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>🛒 Ecommerce Predictive Price Tracking System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- Error Message -->
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <!-- Two Options -->
+        <div class="options-container">
+
+            <!-- Option 1 — Search by Name -->
+            <div class="option-card">
+                <h2>🔍 Option 1 — Search by Name</h2>
+                <p>Search any product and we compare prices across Amazon, Flipkart and Nykaa!</p>
+                <form action="/search" method="POST">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" name="product_name"
+                        placeholder="e.g. iPhone 15, Samsung TV, Shampoo"
+                        required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Price (₹)</label>
+                        <input type="number" name="target_price"
+                        placeholder="e.g. 25000"
+                        required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Email</label>
+                        <input type="email" name="email"
+                        placeholder="e.g. yourname@gmail.com"
+                        required>
+                    </div>
+                    <button type="submit">🔍 Search Best Price</button>
+                </form>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <!-- Option 2 — Paste URL -->
+            <div class="option-card">
+                <h2>🔗 Option 2 — Paste Product URL</h2>
+                <p>Already found the product? Just paste the URL and we track it directly!</p>
+                <form action="/track-url" method="POST">
+                    <div class="form-group">
+                        <label>Product URL</label>
+                        <input type="url" name="product_url"
+                        placeholder="e.g. https://www.amazon.in/product..."
+                        required>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Price (₹)</label>
+                        <input type="number" name="target_price"
+                        placeholder="e.g. 25000"
+                        required>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Email</label>
+                        <input type="email" name="email"
+                        placeholder="e.g. yourname@gmail.com"
+                        required>
+                    </div>
+                    <button type="submit">🔗 Track This Product</button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- Features Section -->
+        <div class="features">
+            <div class="feature-card">
+                <h3>🔍 Smart Search</h3>
+                <p>Search by product name — no URL needed!</p>
+            </div>
+            <div class="feature-card">
+                <h3>💰 Price Comparison</h3>
+                <p>Compare prices across Amazon, Flipkart and Nykaa</p>
+            </div>
+            <div class="feature-card">
+                <h3>📈 Price Prediction</h3>
+                <p>ML predicts if price will go up or down</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔔 Smart Alerts</h3>
+                <p>Get email alert when price drops or hits your target</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>Ecommerce Predictive Price Tracking System — 2024-2025</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

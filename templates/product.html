@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} — Ecommerce Predictive Price Tracking System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>🛒 Ecommerce Predictive Price Tracking System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="product-container">
+
+            <!-- Back Button -->
+            <a href="/dashboard" class="back-btn">🔙 Back to Dashboard</a>
+
+            <!-- Product Header -->
+            <div class="product-header">
+                <h2>{{ product.name }}</h2>
+                <span class="status-badge">{{ product.status }}</span>
+            </div>
+
+            <!-- Product Info Cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <h4>Best Site</h4>
+                    <p>
+                        {% if product.site == "Amazon" %}🟠{% endif %}
+                        {% if product.site == "Flipkart" %}🔵{% endif %}
+                        {% if product.site == "Nykaa" %}🩷{% endif %}
+                        {{ product.site }}
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h4>Current Price</h4>
+                    <p class="price">
+                        {% if product.current_price %}
+                        ₹{{ product.current_price }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="info-card">
+                    <h4>Target Price</h4>
+                    <p class="price">₹{{ product.target_price }}</p>
+                </div>
+                <div class="info-card">
+                    <h4>Alert Email</h4>
+                    <p>{{ product.email }}</p>
+                </div>
+            </div>
+
+            {% if product.prediction %}
+            <!-- Stats Cards -->
+            <div class="stats-section">
+                <h3>📊 Price Statistics</h3>
+                <div class="stats">
+                    <div class="stat-card">
+                        <h4>Highest Price</h4>
+                        <p>₹{{ product.prediction.highest_price }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Lowest Price</h4>
+                        <p>₹{{ product.prediction.lowest_price }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Average Price</h4>
+                        <p>₹{{ product.prediction.average_price }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Predicted (7 days)</h4>
+                        <p>₹{{ product.prediction.predicted_price_7days }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestion -->
+            <div class="suggestion-box">
+                <h3>🤖 ML Suggestion</h3>
+                <p>{{ product.prediction.suggestion }}</p>
+            </div>
+            {% else %}
+            <div class="suggestion-box">
+                <p>⏳ Collecting price data... Check back after 24 hours for predictions!</p>
+            </div>
+            {% endif %}
+
+            <!-- Price History Chart -->
+            <div class="chart-section">
+                <h3>📈 Price History Chart</h3>
+                {% if product.chart_path %}
+                <img src="{{ url_for('static', filename='charts/chart_' + product.id|string + '.png') }}"
+                alt="Price History Chart">
+                {% else %}
+                <div class="no-chart">
+                    <p>📊 Chart will appear after more price data is collected</p>
+                    <p>Price is tracked every 24 hours automatically</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Buy Now Button -->
+            <div class="buy-section">
+                <a href="{{ product.url }}" target="_blank" class="buy-btn">
+                    🛒 Buy Now on {{ product.site }}
+                </a>
+                <a href="/delete/{{ product.id }}" class="delete-btn-large"
+                onclick="return confirm('Are you sure you want to delete {{ product.name }}?')">
+                🗑️ Stop Tracking
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>Ecommerce Predictive Price Tracking System — 2024-2025</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
