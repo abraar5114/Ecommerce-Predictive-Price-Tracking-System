@@ -192,7 +192,7 @@ if __name__ == "__main__":
     scheduler_thread.start()
     app.run(debug=True)
     
-    @app.route("/test-email")
+@app.route("/test-email")
 def test_email():
     from alerts import send_email
     result = send_email(
@@ -204,3 +204,4 @@ def test_email():
         return "Email sent successfully! ✅ Check your inbox.", 200
     else:
         return "Email failed! ❌ Check your Gmail app password.", 500
+    
