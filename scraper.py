@@ -50,7 +50,7 @@ def find_any_price(soup):
     return None
 
 # =============================================
-# SEARCH FUNCTIONS — Return Multiple Results
+# SEARCH FUNCTIONS
 # =============================================
 
 def scrape_amazon(product_name):
@@ -66,22 +66,27 @@ def scrape_amazon(product_name):
 
         for item in items[:5]:
             try:
-                name_el = (
-                    item.find("span", {"class": "a-size-medium"}) or
-                    item.find("span", {"class": "a-size-base-plus"}) or
-                    item.find("h2")
-                )
+                # Get full product name
+                full_name = None
+                h2 = item.find("h2")
+                if h2:
+                    span = h2.find("span")
+                    full_name = span.text.strip() if span else h2.text.strip()
+
+                if not full_name or len(full_name) < 5:
+                    continue
+
                 price_el = (
                     item.find("span", {"class": "a-price-whole"}) or
                     item.find("span", {"class": "a-offscreen"})
                 )
                 link_el = item.find("a", {"class": "a-link-normal"})
 
-                if name_el and price_el and link_el:
+                if full_name and price_el and link_el:
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:150],
+                            "name": full_name[:200],
                             "price": price_value,
                             "url": "https://www.amazon.in" + link_el["href"],
                             "site": "Amazon"
@@ -115,13 +120,21 @@ def scrape_flipkart(product_name):
 
         for item in containers[:5]:
             try:
+                # Try all possible full name elements
                 name_el = (
                     item.find("div", {"class": "_4rR01T"}) or
                     item.find("a", {"class": "s1Q9rs"}) or
                     item.find("div", {"class": "KzDlHZ"}) or
                     item.find("a", {"class": "IRpwTa"}) or
-                    item.find("div", {"class": "fMghEO"})
+                    item.find("div", {"class": "fMghEO"}) or
+                    item.find("div", {"class": "col col-7-12"})
                 )
+
+                if not name_el or len(name_el.text.strip()) < 5:
+                    continue
+
+                full_name = name_el.text.strip()
+
                 price_el = (
                     item.find("div", {"class": "_30jeq3"}) or
                     item.find("div", {"class": "Nx9bqj"}) or
@@ -135,11 +148,12 @@ def scrape_flipkart(product_name):
                     item.find("a", {"class": "CGtC98"}) or
                     item.find("a", href=True)
                 )
-                if name_el and price_el and link_el:
+
+                if full_name and price_el and link_el:
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:150],
+                            "name": full_name[:200],
                             "price": price_value,
                             "url": "https://www.flipkart.com" + link_el["href"],
                             "site": "Flipkart"
@@ -175,8 +189,15 @@ def scrape_nykaa(product_name):
                 name_el = (
                     item.find("div", {"class": "css-xrzmfa"}) or
                     item.find("div", {"class": "product-name"}) or
-                    item.find("p", {"class": "css-1liqaa7"})
+                    item.find("p", {"class": "css-1liqaa7"}) or
+                    item.find("div", {"class": "css-1qtp6nl"})
                 )
+
+                if not name_el or len(name_el.text.strip()) < 3:
+                    continue
+
+                full_name = name_el.text.strip()
+
                 price_el = (
                     item.find("span", {"class": "css-111z9ua"}) or
                     item.find("span", {"class": "post-card__offer-price"}) or
@@ -184,11 +205,11 @@ def scrape_nykaa(product_name):
                 )
                 link_el = item.find("a", href=True)
 
-                if name_el and price_el and link_el:
+                if full_name and price_el and link_el:
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:150],
+                            "name": full_name[:200],
                             "price": price_value,
                             "url": "https://www.nykaa.com" + link_el["href"],
                             "site": "Nykaa"
@@ -214,7 +235,6 @@ def compare_prices(product_name):
     flipkart_results = []
     nykaa_results = []
 
-    # Search all 3 sites in parallel
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         amazon_future = executor.submit(scrape_amazon, product_name)
         flipkart_future = executor.submit(scrape_flipkart, product_name)
@@ -284,7 +304,7 @@ def scrape_amazon_url(url):
             price_value = extract_price(price_el.text)
             if price_value:
                 return {
-                    "name": name_el.text.strip()[:150],
+                    "name": name_el.text.strip()[:200],
                     "price": price_value,
                     "url": clean,
                     "site": "Amazon",
@@ -294,7 +314,7 @@ def scrape_amazon_url(url):
         price_value = find_any_price(soup)
         if name_el and price_value:
             return {
-                "name": name_el.text.strip()[:150],
+                "name": name_el.text.strip()[:200],
                 "price": price_value,
                 "url": clean,
                 "site": "Amazon",
@@ -337,7 +357,7 @@ def scrape_flipkart_url(url):
             price_value = extract_price(price_el.text)
             if price_value:
                 return {
-                    "name": name_el.text.strip()[:150],
+                    "name": name_el.text.strip()[:200],
                     "price": price_value,
                     "url": clean,
                     "site": "Flipkart",
@@ -347,7 +367,7 @@ def scrape_flipkart_url(url):
         price_value = find_any_price(soup)
         if name_el and price_value:
             return {
-                "name": name_el.text.strip()[:150],
+                "name": name_el.text.strip()[:200],
                 "price": price_value,
                 "url": clean,
                 "site": "Flipkart",
@@ -386,7 +406,7 @@ def scrape_nykaa_url(url):
             price_value = extract_price(price_el.text)
             if price_value:
                 return {
-                    "name": name_el.text.strip()[:150],
+                    "name": name_el.text.strip()[:200],
                     "price": price_value,
                     "url": clean,
                     "site": "Nykaa",
@@ -396,7 +416,7 @@ def scrape_nykaa_url(url):
         price_value = find_any_price(soup)
         if name_el and price_value:
             return {
-                "name": name_el.text.strip()[:150],
+                "name": name_el.text.strip()[:200],
                 "price": price_value,
                 "url": clean,
                 "site": "Nykaa",
