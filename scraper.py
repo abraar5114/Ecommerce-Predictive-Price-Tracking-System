@@ -10,7 +10,7 @@ import re
 
 def scraper_get(url):
     api_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&country_code=in"
-    response = requests.get(api_url, timeout=10)
+    response = requests.get(api_url, timeout=30)
     return response
 
 def extract_price(text):
@@ -211,19 +211,32 @@ def scrape_nykaa(product_name):
 
 def compare_prices(product_name):
     print(f"\nSearching for: {product_name}")
-    print("=" * 50)
-
-    amazon_result = scrape_amazon(product_name)
-    flipkart_result = scrape_flipkart(product_name)
-    nykaa_result = scrape_nykaa(product_name)
 
     results = []
-    if amazon_result:
-        results.append(amazon_result)
-    if flipkart_result:
-        results.append(flipkart_result)
-    if nykaa_result:
-        results.append(nykaa_result)
+
+    # Try Amazon first
+    try:
+        amazon_result = scrape_amazon(product_name)
+        if amazon_result:
+            results.append(amazon_result)
+    except:
+        pass
+
+    # Try Flipkart
+    try:
+        flipkart_result = scrape_flipkart(product_name)
+        if flipkart_result:
+            results.append(flipkart_result)
+    except:
+        pass
+
+    # Try Nykaa
+    try:
+        nykaa_result = scrape_nykaa(product_name)
+        if nykaa_result:
+            results.append(nykaa_result)
+    except:
+        pass
 
     if not results:
         return None
