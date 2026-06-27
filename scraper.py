@@ -10,7 +10,7 @@ import re
 
 def scraper_get(url):
     api_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&country_code=in"
-    response = requests.get(api_url, timeout=30)
+    response = requests.get(api_url, timeout=10)
     return response
 
 def extract_price(text):
