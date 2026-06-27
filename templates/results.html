@@ -30,40 +30,104 @@
 
         <div class="results-container">
             <h2>🔍 Results for "{{ product_name }}"</h2>
-            <p style="color:#94a3b8; margin-bottom:20px;">Showing lowest price from each site</p>
+            <p class="results-subtitle">Pick the exact product you want to track — system will monitor its price automatically!</p>
 
-            <div class="results-list">
-                {% for result in results %}
-                <div class="result-card {% if result.best %}result-best{% endif %}">
-                    <div class="result-left">
-                        <div class="result-site">
-                            {% if result.site == "Amazon" %}🟠{% endif %}
-                            {% if result.site == "Flipkart" %}🔵{% endif %}
-                            {% if result.site == "Nykaa" %}🩷{% endif %}
-                            {{ result.site }}
-                            {% if result.best %}<span class="best-badge">✅ Best Price</span>{% endif %}
-                        </div>
-                        <div class="result-name">{{ result.name }}</div>
-                    </div>
-                    <div class="result-right">
-                        <div class="result-price">₹{{ result.price }}</div>
-                        {% if result.best %}
-                        <form action="/track" method="POST">
-                            <input type="hidden" name="product_name" value="{{ product_name }}">
-                            <input type="hidden" name="url" value="{{ result.url }}">
-                            <input type="hidden" name="site" value="{{ result.site }}">
-                            <input type="hidden" name="price" value="{{ result.price }}">
-                            <input type="hidden" name="target_price" value="{{ target_price }}">
-                            <input type="hidden" name="email" value="{{ email }}">
-                            <button type="submit" class="btn btn-primary">📊 Track This</button>
-                        </form>
-                        {% else %}
-                        <a href="{{ result.url }}" target="_blank" class="btn btn-view">👁️ View</a>
-                        {% endif %}
-                    </div>
+            <!-- Amazon Results -->
+            <div class="site-section">
+                <div class="site-header amazon-header">
+                    <span>🟠 Amazon Results</span>
                 </div>
-                {% endfor %}
+                {% if results.amazon %}
+                <div class="results-list">
+                    {% for result in results.amazon %}
+                    <div class="result-card">
+                        <div class="result-left">
+                            <div class="result-name">{{ result.name }}</div>
+                        </div>
+                        <div class="result-right">
+                            <div class="result-price">₹{{ result.price }}</div>
+                            <form action="/track" method="POST">
+                                <input type="hidden" name="product_name" value="{{ result.name }}">
+                                <input type="hidden" name="url" value="{{ result.url }}">
+                                <input type="hidden" name="site" value="{{ result.site }}">
+                                <input type="hidden" name="price" value="{{ result.price }}">
+                                <input type="hidden" name="target_price" value="{{ target_price }}">
+                                <input type="hidden" name="email" value="{{ email }}">
+                                <button type="submit" class="btn btn-track">📊 Track This</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="not-found">❌ No results found on Amazon</div>
+                {% endif %}
             </div>
+
+            <!-- Flipkart Results -->
+            <div class="site-section">
+                <div class="site-header flipkart-header">
+                    <span>🔵 Flipkart Results</span>
+                </div>
+                {% if results.flipkart %}
+                <div class="results-list">
+                    {% for result in results.flipkart %}
+                    <div class="result-card">
+                        <div class="result-left">
+                            <div class="result-name">{{ result.name }}</div>
+                        </div>
+                        <div class="result-right">
+                            <div class="result-price">₹{{ result.price }}</div>
+                            <form action="/track" method="POST">
+                                <input type="hidden" name="product_name" value="{{ result.name }}">
+                                <input type="hidden" name="url" value="{{ result.url }}">
+                                <input type="hidden" name="site" value="{{ result.site }}">
+                                <input type="hidden" name="price" value="{{ result.price }}">
+                                <input type="hidden" name="target_price" value="{{ target_price }}">
+                                <input type="hidden" name="email" value="{{ email }}">
+                                <button type="submit" class="btn btn-track">📊 Track This</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="not-found">❌ No results found on Flipkart</div>
+                {% endif %}
+            </div>
+
+            <!-- Nykaa Results -->
+            <div class="site-section">
+                <div class="site-header nykaa-header">
+                    <span>🩷 Nykaa Results</span>
+                </div>
+                {% if results.nykaa %}
+                <div class="results-list">
+                    {% for result in results.nykaa %}
+                    <div class="result-card">
+                        <div class="result-left">
+                            <div class="result-name">{{ result.name }}</div>
+                        </div>
+                        <div class="result-right">
+                            <div class="result-price">₹{{ result.price }}</div>
+                            <form action="/track" method="POST">
+                                <input type="hidden" name="product_name" value="{{ result.name }}">
+                                <input type="hidden" name="url" value="{{ result.url }}">
+                                <input type="hidden" name="site" value="{{ result.site }}">
+                                <input type="hidden" name="price" value="{{ result.price }}">
+                                <input type="hidden" name="target_price" value="{{ target_price }}">
+                                <input type="hidden" name="email" value="{{ email }}">
+                                <button type="submit" class="btn btn-track">📊 Track This</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="not-found">❌ No results found on Nykaa</div>
+                {% endif %}
+            </div>
+
         </div>
     </main>
 

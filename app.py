@@ -13,7 +13,6 @@ import sqlite3
 from config import DATABASE_NAME
 
 app = Flask(__name__)
-
 create_tables()
 
 @app.route("/")
@@ -31,7 +30,8 @@ def search():
 
     results = compare_prices(product_name)
 
-    if not results:
+    # Check if any results found
+    if not results["amazon"] and not results["flipkart"] and not results["nykaa"]:
         return render_template("index.html", error="No results found! Try different product name.")
 
     return render_template("results.html",
@@ -73,7 +73,6 @@ def track_url():
     )
 
     save_price_history(product_id, result["price"])
-
     return redirect(url_for("dashboard"))
 
 @app.route("/track", methods=["POST"])
@@ -95,7 +94,6 @@ def track():
     )
 
     save_price_history(product_id, current_price)
-
     return redirect(url_for("dashboard"))
 
 @app.route("/dashboard")

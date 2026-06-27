@@ -1,16 +1,17 @@
 # =============================================
 # ECOMMERCE PREDICTIVE PRICE TRACKING SYSTEM
-# Scraper File — ScraperAPI Only (No Selenium)
+# Scraper File — ScraperAPI Only
 # =============================================
 
 import requests
 from bs4 import BeautifulSoup
 from config import SCRAPER_API_KEY
 import re
+import concurrent.futures
 
 def scraper_get(url):
     api_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&country_code=in"
-    response = requests.get(api_url, timeout=30)
+    response = requests.get(api_url, timeout=25)
     return response
 
 def extract_price(text):
@@ -48,6 +49,10 @@ def find_any_price(soup):
                 return price
     return None
 
+# =============================================
+# SEARCH FUNCTIONS — Return Multiple Results
+# =============================================
+
 def scrape_amazon(product_name):
     try:
         search_url = f"https://www.amazon.in/s?k={product_name.replace(' ', '+')}"
@@ -59,7 +64,7 @@ def scrape_amazon(product_name):
         items = soup.find_all("div", {"data-component-type": "s-search-result"})
         print(f"Amazon items found: {len(items)}")
 
-        for item in items[:8]:
+        for item in items[:5]:
             try:
                 name_el = (
                     item.find("span", {"class": "a-size-medium"}) or
@@ -76,7 +81,7 @@ def scrape_amazon(product_name):
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:100],
+                            "name": name_el.text.strip()[:150],
                             "price": price_value,
                             "url": "https://www.amazon.in" + link_el["href"],
                             "site": "Amazon"
@@ -84,15 +89,11 @@ def scrape_amazon(product_name):
             except:
                 continue
 
-        if results:
-            best = min(results, key=lambda x: x["price"])
-            print(f"Amazon best: {best['name']} — ₹{best['price']}")
-            return best
-        return None
+        return results
 
     except Exception as e:
         print(f"Amazon search error: {e}")
-        return None
+        return []
 
 def scrape_flipkart(product_name):
     try:
@@ -112,7 +113,7 @@ def scrape_flipkart(product_name):
 
         print(f"Flipkart containers found: {len(containers)}")
 
-        for item in containers[:8]:
+        for item in containers[:5]:
             try:
                 name_el = (
                     item.find("div", {"class": "_4rR01T"}) or
@@ -138,7 +139,7 @@ def scrape_flipkart(product_name):
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:100],
+                            "name": name_el.text.strip()[:150],
                             "price": price_value,
                             "url": "https://www.flipkart.com" + link_el["href"],
                             "site": "Flipkart"
@@ -146,15 +147,11 @@ def scrape_flipkart(product_name):
             except:
                 continue
 
-        if results:
-            best = min(results, key=lambda x: x["price"])
-            print(f"Flipkart best: {best['name']} — ₹{best['price']}")
-            return best
-        return None
+        return results
 
     except Exception as e:
         print(f"Flipkart search error: {e}")
-        return None
+        return []
 
 def scrape_nykaa(product_name):
     try:
@@ -173,7 +170,7 @@ def scrape_nykaa(product_name):
 
         print(f"Nykaa containers found: {len(containers)}")
 
-        for item in containers[:8]:
+        for item in containers[:5]:
             try:
                 name_el = (
                     item.find("div", {"class": "css-xrzmfa"}) or
@@ -191,7 +188,7 @@ def scrape_nykaa(product_name):
                     price_value = extract_price(price_el.text)
                     if price_value and price_value > 0:
                         results.append({
-                            "name": name_el.text.strip()[:100],
+                            "name": name_el.text.strip()[:150],
                             "price": price_value,
                             "url": "https://www.nykaa.com" + link_el["href"],
                             "site": "Nykaa"
@@ -199,54 +196,54 @@ def scrape_nykaa(product_name):
             except:
                 continue
 
-        if results:
-            best = min(results, key=lambda x: x["price"])
-            print(f"Nykaa best: {best['name']} — ₹{best['price']}")
-            return best
-        return None
+        return results
 
     except Exception as e:
         print(f"Nykaa search error: {e}")
-        return None
+        return []
+
+# =============================================
+# COMPARE — Search All 3 Sites Parallel
+# =============================================
 
 def compare_prices(product_name):
     print(f"\nSearching for: {product_name}")
+    print("=" * 50)
 
-    results = []
+    amazon_results = []
+    flipkart_results = []
+    nykaa_results = []
 
-    # Try Amazon first
-    try:
-        amazon_result = scrape_amazon(product_name)
-        if amazon_result:
-            results.append(amazon_result)
-    except:
-        pass
+    # Search all 3 sites in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        amazon_future = executor.submit(scrape_amazon, product_name)
+        flipkart_future = executor.submit(scrape_flipkart, product_name)
+        nykaa_future = executor.submit(scrape_nykaa, product_name)
 
-    # Try Flipkart
-    try:
-        flipkart_result = scrape_flipkart(product_name)
-        if flipkart_result:
-            results.append(flipkart_result)
-    except:
-        pass
+        try:
+            amazon_results = amazon_future.result(timeout=30)
+        except:
+            print("Amazon timeout")
 
-    # Try Nykaa
-    try:
-        nykaa_result = scrape_nykaa(product_name)
-        if nykaa_result:
-            results.append(nykaa_result)
-    except:
-        pass
+        try:
+            flipkart_results = flipkart_future.result(timeout=30)
+        except:
+            print("Flipkart timeout")
 
-    if not results:
-        return None
+        try:
+            nykaa_results = nykaa_future.result(timeout=30)
+        except:
+            print("Nykaa timeout")
 
-    results.sort(key=lambda x: x["price"])
-    results[0]["best"] = True
-    for r in results[1:]:
-        r["best"] = False
+    return {
+        "amazon": amazon_results,
+        "flipkart": flipkart_results,
+        "nykaa": nykaa_results
+    }
 
-    return results
+# =============================================
+# DIRECT URL FUNCTIONS
+# =============================================
 
 def scrape_direct_url(url):
     try:
@@ -286,11 +283,23 @@ def scrape_amazon_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Amazon", "best": True}
+                return {
+                    "name": name_el.text.strip()[:150],
+                    "price": price_value,
+                    "url": clean,
+                    "site": "Amazon",
+                    "best": True
+                }
 
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Amazon", "best": True}
+            return {
+                "name": name_el.text.strip()[:150],
+                "price": price_value,
+                "url": clean,
+                "site": "Amazon",
+                "best": True
+            }
         return None
 
     except Exception as e:
@@ -327,11 +336,23 @@ def scrape_flipkart_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Flipkart", "best": True}
+                return {
+                    "name": name_el.text.strip()[:150],
+                    "price": price_value,
+                    "url": clean,
+                    "site": "Flipkart",
+                    "best": True
+                }
 
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Flipkart", "best": True}
+            return {
+                "name": name_el.text.strip()[:150],
+                "price": price_value,
+                "url": clean,
+                "site": "Flipkart",
+                "best": True
+            }
         return None
 
     except Exception as e:
@@ -364,14 +385,25 @@ def scrape_nykaa_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Nykaa", "best": True}
+                return {
+                    "name": name_el.text.strip()[:150],
+                    "price": price_value,
+                    "url": clean,
+                    "site": "Nykaa",
+                    "best": True
+                }
 
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Nykaa", "best": True}
+            return {
+                "name": name_el.text.strip()[:150],
+                "price": price_value,
+                "url": clean,
+                "site": "Nykaa",
+                "best": True
+            }
         return None
 
     except Exception as e:
         print(f"Nykaa URL error: {e}")
         return None
-    
