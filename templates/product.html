@@ -5,62 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} — Ecommerce Predictive Price Tracking System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <header>
-        <h1>🛒 Ecommerce Predictive Price Tracking System</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/dashboard">Dashboard</a>
-        </nav>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🛒</span>
+                <div>
+                    <h1>PriceTrack AI</h1>
+                    <p>Ecommerce Predictive Price Tracking System</p>
+                </div>
+            </div>
+            <nav>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link active">Dashboard</a>
+            </nav>
+        </div>
     </header>
 
-    <main>
-        <div class="product-container">
+    <main class="main-content">
+        <a href="/dashboard" class="back-btn">🔙 Back to Dashboard</a>
 
-            <!-- Back Button -->
-            <a href="/dashboard" class="back-btn">🔙 Back to Dashboard</a>
+        <div class="product-detail-card">
 
-            <!-- Product Header -->
-            <div class="product-header">
-                <h2>{{ product.name }}</h2>
-                <span class="status-badge">{{ product.status }}</span>
-            </div>
-
-            <!-- Product Info Cards -->
-            <div class="info-cards">
-                <div class="info-card">
-                    <h4>Best Site</h4>
-                    <p>
+            <div class="product-detail-header">
+                <div>
+                    <h2>{{ product.name }}</h2>
+                    <p class="product-site">
                         {% if product.site == "Amazon" %}🟠{% endif %}
                         {% if product.site == "Flipkart" %}🔵{% endif %}
                         {% if product.site == "Nykaa" %}🩷{% endif %}
                         {{ product.site }}
                     </p>
                 </div>
+                <span class="status-badge
+                    {% if '✅' in product.status %}badge-success
+                    {% elif '📉' in product.status %}badge-drop
+                    {% elif '📈' in product.status %}badge-rise
+                    {% else %}badge-waiting{% endif %}">
+                    {{ product.status }}
+                </span>
+            </div>
+
+            <div class="info-cards">
                 <div class="info-card">
                     <h4>Current Price</h4>
-                    <p class="price">
-                        {% if product.current_price %}
-                        ₹{{ product.current_price }}
-                        {% else %}
-                        —
-                        {% endif %}
-                    </p>
+                    <p>{% if product.current_price %}₹{{ product.current_price }}{% else %}—{% endif %}</p>
                 </div>
                 <div class="info-card">
                     <h4>Target Price</h4>
-                    <p class="price">₹{{ product.target_price }}</p>
+                    <p style="color:#f59e0b;">₹{{ product.target_price }}</p>
                 </div>
                 <div class="info-card">
                     <h4>Alert Email</h4>
-                    <p>{{ product.email }}</p>
+                    <p style="font-size:13px;">{{ product.email }}</p>
+                </div>
+                <div class="info-card">
+                    <h4>Best Site</h4>
+                    <p>{{ product.site }}</p>
                 </div>
             </div>
 
             {% if product.prediction %}
-            <!-- Stats Cards -->
             <div class="stats-section">
                 <h3>📊 Price Statistics</h3>
                 <div class="stats">
@@ -78,54 +86,44 @@
                     </div>
                     <div class="stat-card">
                         <h4>Predicted (7 days)</h4>
-                        <p>₹{{ product.prediction.predicted_price_7days }}</p>
+                        <p style="color:#a78bfa;">₹{{ product.prediction.predicted_price_7days }}</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Suggestion -->
             <div class="suggestion-box">
                 <h3>🤖 ML Suggestion</h3>
                 <p>{{ product.prediction.suggestion }}</p>
             </div>
             {% else %}
             <div class="suggestion-box">
-                <p>⏳ Collecting price data... Check back after 24 hours for predictions!</p>
+                <p>⏳ Collecting price data... Check back after 6 hours for predictions!</p>
             </div>
             {% endif %}
 
-            <!-- Price History Chart -->
             <div class="chart-section">
                 <h3>📈 Price History Chart</h3>
                 {% if product.chart_path %}
-                <img src="{{ url_for('static', filename='charts/chart_' + product.id|string + '.png') }}"
-                alt="Price History Chart">
+                <img src="{{ url_for('static', filename='charts/chart_' + product.id|string + '.png') }}" alt="Price History Chart">
                 {% else %}
                 <div class="no-chart">
                     <p>📊 Chart will appear after more price data is collected</p>
-                    <p>Price is tracked every 24 hours automatically</p>
                 </div>
                 {% endif %}
             </div>
 
-            <!-- Buy Now Button -->
             <div class="buy-section">
-                <a href="{{ product.url }}" target="_blank" class="buy-btn">
-                    🛒 Buy Now on {{ product.site }}
-                </a>
-                <a href="/delete/{{ product.id }}" class="delete-btn-large"
-                onclick="return confirm('Are you sure you want to delete {{ product.name }}?')">
-                🗑️ Stop Tracking
-                </a>
+                <a href="{{ product.url }}" target="_blank" class="btn btn-primary">🛒 Buy Now on {{ product.site }}</a>
+                <a href="/delete/{{ product.id }}" class="btn btn-delete"
+                onclick="return confirm('Stop tracking {{ product.name }}?')">🗑️ Stop Tracking</a>
             </div>
 
         </div>
     </main>
 
-    <footer>
-        <p>Ecommerce Predictive Price Tracking System — 2024-2025</p>
+    <footer class="main-footer">
+        <p>🛒 Ecommerce Predictive Price Tracking System — 2024-2025</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

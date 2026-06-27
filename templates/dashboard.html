@@ -9,7 +9,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header class="main-header">
         <div class="header-content">
             <div class="logo">
@@ -28,7 +27,6 @@
 
     <main class="main-content">
 
-        <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div>
                 <h2>📊 My Tracked Products</h2>
@@ -46,46 +44,44 @@
         </div>
 
         {% else %}
-
-        <!-- Products Grid -->
-        <div class="products-grid">
+        <div class="products-list">
             {% for product in products %}
             <div class="product-card">
 
-                <!-- Product Header -->
-                <div class="product-card-header">
-                    <div class="product-title-row">
+                <div class="product-top">
+                    <div class="product-info">
                         <h3>{{ product.name }}</h3>
-                        <span class="status-badge
-                            {% if '✅' in product.status %}badge-success
-                            {% elif '📉' in product.status %}badge-drop
-                            {% elif '📈' in product.status %}badge-rise
-                            {% else %}badge-waiting{% endif %}">
-                            {{ product.status }}
-                        </span>
+                        <p class="product-site">
+                            {% if product.site == "Amazon" %}🟠{% endif %}
+                            {% if product.site == "Flipkart" %}🔵{% endif %}
+                            {% if product.site == "Nykaa" %}🩷{% endif %}
+                            {{ product.site }}
+                        </p>
                     </div>
-                    <p class="product-site">
-                        {% if product.site == "Amazon" %}🟠{% endif %}
-                        {% if product.site == "Flipkart" %}🔵{% endif %}
-                        {% if product.site == "Nykaa" %}🩷{% endif %}
-                        {{ product.site }}
-                    </p>
+                    <span class="status-badge
+                        {% if '✅' in product.status %}badge-success
+                        {% elif '📉' in product.status %}badge-drop
+                        {% elif '📈' in product.status %}badge-rise
+                        {% else %}badge-waiting{% endif %}">
+                        {{ product.status }}
+                    </span>
                 </div>
 
-                <!-- Price Cards -->
-                <div class="price-cards">
-                    <div class="price-card">
+                <div class="price-row">
+                    <div class="price-box">
                         <span class="price-label">Current Price</span>
                         <span class="price-value current">
                             {% if product.current_price %}₹{{ product.current_price }}{% else %}—{% endif %}
                         </span>
                     </div>
-                    <div class="price-card">
+                    <div class="price-divider">→</div>
+                    <div class="price-box">
                         <span class="price-label">Your Target</span>
                         <span class="price-value target">₹{{ product.target_price }}</span>
                     </div>
-                    <div class="price-card">
-                        <span class="price-label">ML Prediction</span>
+                    <div class="price-divider">→</div>
+                    <div class="price-box">
+                        <span class="price-label">ML Predicted (7 days)</span>
                         <span class="price-value predicted">
                             {% if product.prediction %}
                             ₹{{ product.prediction.predicted_price_7days }}
@@ -96,7 +92,6 @@
                     </div>
                 </div>
 
-                <!-- ML Suggestion -->
                 <div class="ml-suggestion
                     {% if product.prediction %}
                         {% if 'DROPPING' in product.prediction.suggestion %}suggestion-drop
@@ -106,11 +101,10 @@
                     {% if product.prediction %}
                     🤖 {{ product.prediction.suggestion }}
                     {% else %}
-                    🤖 ⏳ Need more data — check back tomorrow!
+                    🤖 ⏳ Need more data — check back after 6 hours!
                     {% endif %}
                 </div>
 
-                <!-- Actions -->
                 <div class="product-actions">
                     <a href="/product/{{ product.id }}" class="btn btn-view">📊 View Details</a>
                     <a href="/delete/{{ product.id }}" class="btn btn-delete"

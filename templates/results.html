@@ -3,78 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results — Ecommerce Predictive Price Tracking System</title>
+    <title>Results — Ecommerce Predictive Price Tracking System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>🛒 Ecommerce Predictive Price Tracking System</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/dashboard">Dashboard</a>
-        </nav>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🛒</span>
+                <div>
+                    <h1>PriceTrack AI</h1>
+                    <p>Ecommerce Predictive Price Tracking System</p>
+                </div>
+            </div>
+            <nav>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+            </nav>
+        </div>
     </header>
 
-    <!-- Main Section -->
-    <main>
-        <div class="results-container">
-            <h2>Search Results for "{{ product_name }}"</h2>
-            <p>We found the following prices across all sites:</p>
+    <main class="main-content">
+        <a href="/" class="back-btn">🔙 Back</a>
 
-            <!-- Results Table -->
-            <table class="results-table">
-                <thead>
-                    <tr>
-                        <th>Site</th>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for result in results %}
-                    <tr class="{% if result.best %}best-deal{% endif %}">
-                        <td>
+        <div class="results-container">
+            <h2>🔍 Results for "{{ product_name }}"</h2>
+            <p style="color:#94a3b8; margin-bottom:20px;">Showing lowest price from each site</p>
+
+            <div class="results-list">
+                {% for result in results %}
+                <div class="result-card {% if result.best %}result-best{% endif %}">
+                    <div class="result-left">
+                        <div class="result-site">
                             {% if result.site == "Amazon" %}🟠{% endif %}
                             {% if result.site == "Flipkart" %}🔵{% endif %}
                             {% if result.site == "Nykaa" %}🩷{% endif %}
                             {{ result.site }}
-                            {% if result.best %}
-                            <span class="best-badge">✅ Best Price</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ result.name }}</td>
-                        <td class="price">₹{{ result.price }}</td>
-                        <td>
-                            {% if result.best %}
-                            <!-- Track This Product Form -->
-                            <form action="/track" method="POST">
-                                <input type="hidden" name="product_name" value="{{ product_name }}">
-                                <input type="hidden" name="url" value="{{ result.url }}">
-                                <input type="hidden" name="site" value="{{ result.site }}">
-                                <input type="hidden" name="price" value="{{ result.price }}">
-                                <input type="hidden" name="target_price" value="{{ target_price }}">
-                                <input type="hidden" name="email" value="{{ email }}">
-                                <button type="submit" class="track-btn">📊 Start Tracking</button>
-                            </form>
-                            {% else %}
-                            <a href="{{ result.url }}" target="_blank" class="view-btn">👁️ View</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            <a href="/" class="back-btn">🔙 Search Again</a>
+                            {% if result.best %}<span class="best-badge">✅ Best Price</span>{% endif %}
+                        </div>
+                        <div class="result-name">{{ result.name }}</div>
+                    </div>
+                    <div class="result-right">
+                        <div class="result-price">₹{{ result.price }}</div>
+                        {% if result.best %}
+                        <form action="/track" method="POST">
+                            <input type="hidden" name="product_name" value="{{ product_name }}">
+                            <input type="hidden" name="url" value="{{ result.url }}">
+                            <input type="hidden" name="site" value="{{ result.site }}">
+                            <input type="hidden" name="price" value="{{ result.price }}">
+                            <input type="hidden" name="target_price" value="{{ target_price }}">
+                            <input type="hidden" name="email" value="{{ email }}">
+                            <button type="submit" class="btn btn-primary">📊 Track This</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ result.url }}" target="_blank" class="btn btn-view">👁️ View</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>Ecommerce Predictive Price Tracking System — 2024-2025</p>
+    <footer class="main-footer">
+        <p>🛒 Ecommerce Predictive Price Tracking System — 2024-2025</p>
     </footer>
 
 </body>
