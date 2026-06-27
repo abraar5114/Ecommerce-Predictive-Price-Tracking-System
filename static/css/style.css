@@ -162,8 +162,8 @@ nav { display: flex; gap: 6px; }
 .step h4 { font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; }
 .step p { font-size: 11px; color: #6b7280; }
 
-/* --- Supported Sites --- */
-.supported-sites { }
+/* --- Supported Sites --- */ 
+
 .supported-sites > p {
     font-size: 10px;
     color: #4b5563;
