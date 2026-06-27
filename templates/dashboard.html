@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Ecommerce Predictive Price Tracking System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -30,7 +30,7 @@
         <div class="dashboard-header">
             <div>
                 <h2>📊 My Tracked Products</h2>
-                <p>Prices update automatically every 6 hours. No manual checking needed!</p>
+                <p>Prices update automatically every 6 hours</p>
             </div>
             <a href="/" class="btn btn-primary" style="width:auto;">+ Add Product</a>
         </div>
@@ -39,8 +39,8 @@
         <div class="empty-state">
             <span>📦</span>
             <h3>No products tracked yet!</h3>
-            <p>Search for a product or paste a URL to start tracking</p>
-            <a href="/" class="btn btn-primary" style="width:auto; display:inline-block;">🔍 Add Your First Product</a>
+            <p>Paste a product URL to start tracking</p>
+            <a href="/" class="btn btn-primary" style="width:auto; display:inline-block;">🚀 Add Your First Product</a>
         </div>
 
         {% else %}
@@ -74,14 +74,14 @@
                             {% if product.current_price %}₹{{ product.current_price }}{% else %}—{% endif %}
                         </span>
                     </div>
-                    <div class="price-divider">→</div>
+                    <div class="price-arrow">→</div>
                     <div class="price-box">
                         <span class="price-label">Your Target</span>
                         <span class="price-value target">₹{{ product.target_price }}</span>
                     </div>
-                    <div class="price-divider">→</div>
+                    <div class="price-arrow">→</div>
                     <div class="price-box">
-                        <span class="price-label">ML Predicted (7 days)</span>
+                        <span class="price-label">ML Predicted (7d)</span>
                         <span class="price-value predicted">
                             {% if product.prediction %}
                             ₹{{ product.prediction.predicted_price_7days }}
@@ -101,12 +101,13 @@
                     {% if product.prediction %}
                     🤖 {{ product.prediction.suggestion }}
                     {% else %}
-                    🤖 ⏳ Need more data — check back after 6 hours!
+                    🤖 ⏳ Collecting data — predictions appear after 6 hours!
                     {% endif %}
                 </div>
 
                 <div class="product-actions">
-                    <a href="/product/{{ product.id }}" class="btn btn-view">📊 View Details</a>
+                    <a href="{{ product.url }}" target="_blank" class="btn btn-buy">🛒 Buy Now</a>
+                    <a href="/product/{{ product.id }}" class="btn btn-view">📊 Details</a>
                     <a href="/delete/{{ product.id }}" class="btn btn-delete"
                     onclick="return confirm('Delete {{ product.name }}?')">🗑️ Delete</a>
                 </div>
