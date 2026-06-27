@@ -101,12 +101,11 @@
                     {% if product.prediction %}
                     🤖 {{ product.prediction.suggestion }}
                     {% else %}
-                    🤖 ⏳ Need more data — click Update to get latest price!
+                    🤖 ⏳ Need more data — check back after 6 hours!
                     {% endif %}
                 </div>
 
                 <div class="product-actions">
-                    <a href="/update-now/{{ product.id }}" class="btn btn-update">🔄 Update</a>
                     <a href="/product/{{ product.id }}" class="btn btn-view">📊 View Details</a>
                     <a href="/delete/{{ product.id }}" class="btn btn-delete"
                     onclick="return confirm('Delete {{ product.name }}?')">🗑️ Delete</a>

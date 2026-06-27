@@ -186,39 +186,6 @@ def delete_product(product_id):
     conn.close()
     return redirect(url_for("dashboard"))
 
-@app.route("/update-now/<int:product_id>")
-def update_now(product_id):
-    try:
-        conn = sqlite3.connect(DATABASE_NAME)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
-        product = cursor.fetchone()
-        conn.close()
-
-        if product:
-            product_name = product[1]
-            target_price = product[4]
-            email = product[5]
-            old_price = product[6]
-
-            results = compare_prices(product_name)
-            if results:
-                current_price = results[0]["price"]
-                current_site = results[0]["site"]
-                current_url = results[0]["url"]
-
-                save_price_history(product_id, current_price)
-                update_current_price(product_id, current_price)
-
-                from alerts import check_target_price_alert, check_price_drop_alert
-                check_target_price_alert(product_name, current_price, target_price, current_site, current_url, email)
-                check_price_drop_alert(product_name, old_price, current_price, current_site, current_url, email)
-
-    except Exception as e:
-        print(f"Update error: {e}")
-
-    return redirect(url_for("dashboard"))
-
 def run_scheduler():
     scheduler.start_scheduler()
 
