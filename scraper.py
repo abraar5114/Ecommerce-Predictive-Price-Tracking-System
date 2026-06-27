@@ -8,13 +8,11 @@ from bs4 import BeautifulSoup
 from config import SCRAPER_API_KEY
 import re
 
-# --- ScraperAPI Request ---
 def scraper_get(url):
-    api_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&country_code=in&render=true"
-    response = requests.get(api_url, timeout=60)
+    api_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&country_code=in"
+    response = requests.get(api_url, timeout=30)
     return response
 
-# --- Extract Price ---
 def extract_price(text):
     try:
         cleaned = re.sub(r'[₹,\s]', '', text)
@@ -25,7 +23,6 @@ def extract_price(text):
     except:
         return None
 
-# --- Clean URL ---
 def clean_url(url, site):
     try:
         if site == "flipkart":
@@ -42,7 +39,6 @@ def clean_url(url, site):
     except:
         return url
 
-# --- Find Price from Any Tag ---
 def find_any_price(soup):
     for tag in soup.find_all(["span", "div", "strong", "p"]):
         text = tag.text.strip()
@@ -52,11 +48,52 @@ def find_any_price(soup):
                 return price
     return None
 
-# =============================================
-# SEARCH FUNCTIONS
-# =============================================
+def scrape_amazon(product_name):
+    try:
+        search_url = f"https://www.amazon.in/s?k={product_name.replace(' ', '+')}"
+        print(f"Searching Amazon: {search_url}")
+        response = scraper_get(search_url)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-# --- Scrape Flipkart Search ---
+        results = []
+        items = soup.find_all("div", {"data-component-type": "s-search-result"})
+        print(f"Amazon items found: {len(items)}")
+
+        for item in items[:8]:
+            try:
+                name_el = (
+                    item.find("span", {"class": "a-size-medium"}) or
+                    item.find("span", {"class": "a-size-base-plus"}) or
+                    item.find("h2")
+                )
+                price_el = (
+                    item.find("span", {"class": "a-price-whole"}) or
+                    item.find("span", {"class": "a-offscreen"})
+                )
+                link_el = item.find("a", {"class": "a-link-normal"})
+
+                if name_el and price_el and link_el:
+                    price_value = extract_price(price_el.text)
+                    if price_value and price_value > 0:
+                        results.append({
+                            "name": name_el.text.strip()[:100],
+                            "price": price_value,
+                            "url": "https://www.amazon.in" + link_el["href"],
+                            "site": "Amazon"
+                        })
+            except:
+                continue
+
+        if results:
+            best = min(results, key=lambda x: x["price"])
+            print(f"Amazon best: {best['name']} — ₹{best['price']}")
+            return best
+        return None
+
+    except Exception as e:
+        print(f"Amazon search error: {e}")
+        return None
+
 def scrape_flipkart(product_name):
     try:
         search_url = f"https://www.flipkart.com/search?q={product_name.replace(' ', '+')}"
@@ -119,54 +156,6 @@ def scrape_flipkart(product_name):
         print(f"Flipkart search error: {e}")
         return None
 
-# --- Scrape Amazon Search ---
-def scrape_amazon(product_name):
-    try:
-        search_url = f"https://www.amazon.in/s?k={product_name.replace(' ', '+')}"
-        print(f"Searching Amazon: {search_url}")
-        response = scraper_get(search_url)
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        results = []
-        items = soup.find_all("div", {"data-component-type": "s-search-result"})
-        print(f"Amazon items found: {len(items)}")
-
-        for item in items[:8]:
-            try:
-                name_el = (
-                    item.find("span", {"class": "a-size-medium"}) or
-                    item.find("span", {"class": "a-size-base-plus"}) or
-                    item.find("h2")
-                )
-                price_el = (
-                    item.find("span", {"class": "a-price-whole"}) or
-                    item.find("span", {"class": "a-offscreen"})
-                )
-                link_el = item.find("a", {"class": "a-link-normal"})
-
-                if name_el and price_el and link_el:
-                    price_value = extract_price(price_el.text)
-                    if price_value and price_value > 0:
-                        results.append({
-                            "name": name_el.text.strip()[:100],
-                            "price": price_value,
-                            "url": "https://www.amazon.in" + link_el["href"],
-                            "site": "Amazon"
-                        })
-            except:
-                continue
-
-        if results:
-            best = min(results, key=lambda x: x["price"])
-            print(f"Amazon best: {best['name']} — ₹{best['price']}")
-            return best
-        return None
-
-    except Exception as e:
-        print(f"Amazon search error: {e}")
-        return None
-
-# --- Scrape Nykaa Search ---
 def scrape_nykaa(product_name):
     try:
         search_url = f"https://www.nykaa.com/search/result/?q={product_name.replace(' ', '%20')}"
@@ -220,20 +209,19 @@ def scrape_nykaa(product_name):
         print(f"Nykaa search error: {e}")
         return None
 
-# --- Compare All Sites ---
 def compare_prices(product_name):
     print(f"\nSearching for: {product_name}")
     print("=" * 50)
 
-    flipkart_result = scrape_flipkart(product_name)
     amazon_result = scrape_amazon(product_name)
+    flipkart_result = scrape_flipkart(product_name)
     nykaa_result = scrape_nykaa(product_name)
 
     results = []
-    if flipkart_result:
-        results.append(flipkart_result)
     if amazon_result:
         results.append(amazon_result)
+    if flipkart_result:
+        results.append(flipkart_result)
     if nykaa_result:
         results.append(nykaa_result)
 
@@ -246,10 +234,6 @@ def compare_prices(product_name):
         r["best"] = False
 
     return results
-
-# =============================================
-# DIRECT URL FUNCTIONS
-# =============================================
 
 def scrape_direct_url(url):
     try:
@@ -265,7 +249,6 @@ def scrape_direct_url(url):
         print(f"Direct URL error: {e}")
         return None
 
-# --- Amazon Direct URL ---
 def scrape_amazon_url(url):
     try:
         clean = clean_url(url, "amazon")
@@ -290,31 +273,17 @@ def scrape_amazon_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {
-                    "name": name_el.text.strip()[:100],
-                    "price": price_value,
-                    "url": clean,
-                    "site": "Amazon",
-                    "best": True
-                }
+                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Amazon", "best": True}
 
-        # Try finding any price
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {
-                "name": name_el.text.strip()[:100],
-                "price": price_value,
-                "url": clean,
-                "site": "Amazon",
-                "best": True
-            }
+            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Amazon", "best": True}
         return None
 
     except Exception as e:
         print(f"Amazon URL error: {e}")
         return None
 
-# --- Flipkart Direct URL ---
 def scrape_flipkart_url(url):
     try:
         clean = clean_url(url, "flipkart")
@@ -345,31 +314,17 @@ def scrape_flipkart_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {
-                    "name": name_el.text.strip()[:100],
-                    "price": price_value,
-                    "url": clean,
-                    "site": "Flipkart",
-                    "best": True
-                }
+                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Flipkart", "best": True}
 
-        # Try finding any price
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {
-                "name": name_el.text.strip()[:100],
-                "price": price_value,
-                "url": clean,
-                "site": "Flipkart",
-                "best": True
-            }
+            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Flipkart", "best": True}
         return None
 
     except Exception as e:
         print(f"Flipkart URL error: {e}")
         return None
 
-# --- Nykaa Direct URL ---
 def scrape_nykaa_url(url):
     try:
         clean = clean_url(url, "nykaa")
@@ -396,26 +351,14 @@ def scrape_nykaa_url(url):
         if name_el and price_el:
             price_value = extract_price(price_el.text)
             if price_value:
-                return {
-                    "name": name_el.text.strip()[:100],
-                    "price": price_value,
-                    "url": clean,
-                    "site": "Nykaa",
-                    "best": True
-                }
+                return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Nykaa", "best": True}
 
-        # Try finding any price
         price_value = find_any_price(soup)
         if name_el and price_value:
-            return {
-                "name": name_el.text.strip()[:100],
-                "price": price_value,
-                "url": clean,
-                "site": "Nykaa",
-                "best": True
-            }
+            return {"name": name_el.text.strip()[:100], "price": price_value, "url": clean, "site": "Nykaa", "best": True}
         return None
 
     except Exception as e:
         print(f"Nykaa URL error: {e}")
         return None
+    
