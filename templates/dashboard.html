@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Ecommerce Predictive Price Tracking System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -20,103 +20,60 @@
             </div>
             <nav>
                 <a href="/" class="nav-link">Home</a>
-                <a href="/dashboard" class="nav-link active">Dashboard</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
             </nav>
         </div>
     </header>
 
     <main class="main-content">
+        <div class="dashboard-container">
+            <h2>📊 My Tracked Products</h2>
 
-        <div class="dashboard-header">
-            <div>
-                <h2>📊 My Tracked Products</h2>
-                <p>Prices update automatically every 6 hours</p>
+            {% if not products %}
+            <div class="empty">
+                <p>No products tracked yet!</p>
+                <a href="/">🔍 Track your first product</a>
             </div>
-            <a href="/" class="btn btn-primary" style="width:auto;">+ Add Product</a>
-        </div>
-
-        {% if not products %}
-        <div class="empty-state">
-            <span>📦</span>
-            <h3>No products tracked yet!</h3>
-            <p>Paste a product URL to start tracking</p>
-            <a href="/" class="btn btn-primary" style="width:auto; display:inline-block;">🚀 Add Your First Product</a>
-        </div>
-
-        {% else %}
-        <div class="products-list">
-            {% for product in products %}
-            <div class="product-card">
-
-                <div class="product-top">
-                    <div class="product-info">
-                        <h3>{{ product.name }}</h3>
-                        <p class="product-site">
+            {% else %}
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Site</th>
+                        <th>Current Price</th>
+                        <th>Target Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>
                             {% if product.site == "Amazon" %}🟠{% endif %}
                             {% if product.site == "Flipkart" %}🔵{% endif %}
                             {% if product.site == "Nykaa" %}🩷{% endif %}
                             {{ product.site }}
-                        </p>
-                    </div>
-                    <span class="status-badge
-                        {% if '✅' in product.status %}badge-success
-                        {% elif '📉' in product.status %}badge-drop
-                        {% elif '📈' in product.status %}badge-rise
-                        {% else %}badge-waiting{% endif %}">
-                        {{ product.status }}
-                    </span>
-                </div>
-
-                <div class="price-row">
-                    <div class="price-box">
-                        <span class="price-label">Current Price</span>
-                        <span class="price-value current">
+                        </td>
+                        <td class="price">
                             {% if product.current_price %}₹{{ product.current_price }}{% else %}—{% endif %}
-                        </span>
-                    </div>
-                    <div class="price-arrow">→</div>
-                    <div class="price-box">
-                        <span class="price-label">Your Target</span>
-                        <span class="price-value target">₹{{ product.target_price }}</span>
-                    </div>
-                    <div class="price-arrow">→</div>
-                    <div class="price-box">
-                        <span class="price-label">ML Predicted (7d)</span>
-                        <span class="price-value predicted">
-                            {% if product.prediction %}
-                            ₹{{ product.prediction.predicted_price_7days }}
-                            {% else %}
-                            Collecting...
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="ml-suggestion
-                    {% if product.prediction %}
-                        {% if 'DROPPING' in product.prediction.suggestion %}suggestion-drop
-                        {% elif 'RISING' in product.prediction.suggestion %}suggestion-rise
-                        {% else %}suggestion-stable{% endif %}
-                    {% else %}suggestion-waiting{% endif %}">
-                    {% if product.prediction %}
-                    🤖 {{ product.prediction.suggestion }}
-                    {% else %}
-                    🤖 ⏳ Collecting data — predictions appear after 6 hours!
-                    {% endif %}
-                </div>
-
-                <div class="product-actions">
-                    <a href="{{ product.url }}" target="_blank" class="btn btn-buy">🛒 Buy Now</a>
-                    <a href="/product/{{ product.id }}" class="btn btn-view">📊 Details</a>
-                    <a href="/delete/{{ product.id }}" class="btn btn-delete"
-                    onclick="return confirm('Delete {{ product.name }}?')">🗑️ Delete</a>
-                </div>
-
-            </div>
-            {% endfor %}
+                        </td>
+                        <td class="price">₹{{ product.target_price }}</td>
+                        <td>{{ product.status }}</td>
+                        <td>
+                            <a href="/product/{{ product.id }}" class="view-btn">📊 View</a>
+                            <a href="/delete/{{ product.id }}" class="delete-btn"
+                            onclick="return confirm('Stop tracking {{ product.name }}?')">🗑️ Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
         </div>
-        {% endif %}
-
     </main>
 
     <footer class="main-footer">

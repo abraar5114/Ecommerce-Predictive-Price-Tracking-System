@@ -4,17 +4,18 @@
 # =============================================
 
 import sqlite3
+from datetime import datetime
 from config import DATABASE_NAME
 
+
 def create_connection():
-    conn = sqlite3.connect(DATABASE_NAME)
-    return conn
+    return sqlite3.connect(DATABASE_NAME)
+
 
 def create_tables():
     conn = create_connection()
     cursor = conn.cursor()
 
-    # Products Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +29,6 @@ def create_tables():
         )
     ''')
 
-    # Price History Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS price_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +41,8 @@ def create_tables():
 
     conn.commit()
     conn.close()
-    print("Database created successfully!")
+    print("Database ready.")
+
 
 def save_product(name, url, site, target_price, email, current_price):
     conn = create_connection()
@@ -55,8 +56,8 @@ def save_product(name, url, site, target_price, email, current_price):
     conn.close()
     return product_id
 
+
 def save_price_history(product_id, price):
-    from datetime import datetime
     conn = create_connection()
     cursor = conn.cursor()
     cursor.execute('''
@@ -66,6 +67,7 @@ def save_price_history(product_id, price):
     conn.commit()
     conn.close()
 
+
 def get_all_products():
     conn = create_connection()
     cursor = conn.cursor()
@@ -73,6 +75,7 @@ def get_all_products():
     products = cursor.fetchall()
     conn.close()
     return products
+
 
 def get_price_history(product_id):
     conn = create_connection()
@@ -86,15 +89,28 @@ def get_price_history(product_id):
     conn.close()
     return history
 
+
 def update_current_price(product_id, price):
     conn = create_connection()
     cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE products SET current_price = ?
-        WHERE id = ?
-    ''', (price, product_id))
+    cursor.execute('UPDATE products SET current_price = ? WHERE id = ?', (price, product_id))
     conn.commit()
     conn.close()
 
-# Create tables when file runs
-create_tables()
+
+def delete_product(product_id):
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
+    cursor.execute("DELETE FROM price_history WHERE product_id = ?", (product_id,))
+    conn.commit()
+    conn.close()
+
+
+def get_product_by_id(product_id):
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
+    product = cursor.fetchone()
+    conn.close()
+    return product

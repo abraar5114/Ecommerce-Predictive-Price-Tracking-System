@@ -6,6 +6,5 @@ numpy
 scikit-learn
 matplotlib
 schedule
-cloudscraper
 gunicorn
-python-dotenv
+
