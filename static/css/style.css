@@ -46,32 +46,29 @@ nav { display: flex; gap: 8px; }
 .nav-link:hover { background: #334155; color: #e2e8f0; }
 .nav-link.active { background: #0ea5e9; color: white; }
 
-/* --- Hero --- */
-.hero {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-bottom: 1px solid #334155;
-    padding: 25px 30px;
+/* --- Page Title --- */
+.page-title {
     text-align: center;
+    padding: 25px 0 20px 0;
 }
 
-.hero h2 {
-    font-size: 22px;
+.page-title h2 {
+    font-size: 20px;
     font-weight: 700;
     color: #f1f5f9;
-    line-height: 1.2;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-.hero p {
+.page-title p {
     font-size: 13px;
-    color: #94a3b8;
-    line-height: 1.5;
+    color: #64748b;
 }
+
 /* --- Main --- */
 .main-content {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 30px;
+    padding: 20px 30px 30px 30px;
 }
 
 /* --- Alert --- */
@@ -89,8 +86,7 @@ nav { display: flex; gap: 8px; }
     display: flex;
     gap: 20px;
     align-items: flex-start;
-    margin-bottom: 40px;
-    margin-top: 30px;
+    margin-bottom: 35px;
 }
 
 .option-card {
@@ -193,7 +189,7 @@ nav { display: flex; gap: 8px; }
 
 /* --- Features --- */
 .features-section { margin-top: 10px; }
-.features-section h3 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 20px; text-align: center; }
+.features-section h3 { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 15px; text-align: center; }
 
 .features-grid {
     display: grid;
@@ -204,16 +200,16 @@ nav { display: flex; gap: 8px; }
 .feature-card {
     background: #1e293b;
     border: 1px solid #334155;
-    padding: 22px 18px;
+    padding: 20px 16px;
     border-radius: 12px;
     text-align: center;
     transition: border-color 0.2s;
 }
 
 .feature-card:hover { border-color: #0ea5e9; }
-.feature-icon { font-size: 28px; display: block; margin-bottom: 10px; }
-.feature-card h4 { font-size: 14px; font-weight: 600; color: #f1f5f9; margin-bottom: 6px; }
-.feature-card p { font-size: 12px; color: #64748b; line-height: 1.5; }
+.feature-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+.feature-card h4 { font-size: 13px; font-weight: 600; color: #f1f5f9; margin-bottom: 5px; }
+.feature-card p { font-size: 12px; color: #64748b; line-height: 1.4; }
 
 /* --- Dashboard Header --- */
 .dashboard-header {
@@ -223,8 +219,8 @@ nav { display: flex; gap: 8px; }
     margin-bottom: 25px;
 }
 
-.dashboard-header h2 { font-size: 22px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
-.dashboard-header p { font-size: 13px; color: #64748b; }
+.dashboard-header h2 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+.dashboard-header p { font-size: 12px; color: #64748b; }
 .dashboard-header .btn { width: auto; }
 
 /* --- Empty State --- */
@@ -239,7 +235,6 @@ nav { display: flex; gap: 8px; }
 .empty-state span { font-size: 50px; display: block; margin-bottom: 15px; }
 .empty-state h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #f1f5f9; }
 .empty-state p { color: #64748b; margin-bottom: 20px; }
-.empty-state .btn { width: auto; display: inline-block; }
 
 /* --- Products List --- */
 .products-list { display: flex; flex-direction: column; gap: 16px; }
@@ -440,7 +435,7 @@ nav { display: flex; gap: 8px; }
 .chart-section h3 { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 12px; }
 
 .chart-section img {
-    width: 75%;
+    width: 70%;
     display: block;
     margin: 0 auto;
     border-radius: 10px;
@@ -470,8 +465,3 @@ nav { display: flex; gap: 8px; }
     margin-top: 50px;
     font-size: 13px;
 }
-/* --- Dashboard Actions --- */
-.dashboard-actions { display: flex; gap: 10px; align-items: center; }
-.dashboard-actions .btn { width: auto; }
-.btn-update { background: #0f766e; color: white; }
-.btn-update:hover { background: #0d9488; }
