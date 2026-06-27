@@ -32,7 +32,10 @@
                 <h2>📊 My Tracked Products</h2>
                 <p>Prices update automatically every 6 hours. No manual checking needed!</p>
             </div>
-            <a href="/" class="btn btn-primary">+ Add Product</a>
+            <div class="dashboard-actions">
+                <a href="/update-now" class="btn btn-update">🔄 Update Now</a>
+                <a href="/" class="btn btn-primary">+ Add Product</a>
+            </div>
         </div>
 
         {% if not products %}
@@ -40,7 +43,7 @@
             <span>📦</span>
             <h3>No products tracked yet!</h3>
             <p>Search for a product or paste a URL to start tracking</p>
-            <a href="/" class="btn btn-primary">🔍 Add Your First Product</a>
+            <a href="/" class="btn btn-primary" style="width:auto; display:inline-block;">🔍 Add Your First Product</a>
         </div>
 
         {% else %}
@@ -101,7 +104,7 @@
                     {% if product.prediction %}
                     🤖 {{ product.prediction.suggestion }}
                     {% else %}
-                    🤖 ⏳ Need more data — check back after 6 hours!
+                    🤖 ⏳ Need more data — click Update Now or check back after 6 hours!
                     {% endif %}
                 </div>
 

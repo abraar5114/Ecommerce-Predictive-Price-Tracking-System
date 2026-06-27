@@ -14,15 +14,12 @@ from config import DATABASE_NAME
 
 app = Flask(__name__)
 
-# Create database tables when app starts
 create_tables()
 
-# --- Home Page ---
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# --- Search Results ---
 @app.route("/search", methods=["POST"])
 def search():
     product_name = request.form.get("product_name")
@@ -43,7 +40,6 @@ def search():
                            target_price=target_price,
                            email=email)
 
-# --- Track by Direct URL ---
 @app.route("/track-url", methods=["POST"])
 def track_url():
     product_url = request.form.get("product_url")
@@ -53,7 +49,6 @@ def track_url():
     if not product_url or not target_price or not email:
         return render_template("index.html", error="Please fill all fields!")
 
-    # Detect site
     if "amazon" in product_url:
         site = "Amazon"
     elif "flipkart" in product_url:
@@ -63,13 +58,11 @@ def track_url():
     else:
         return render_template("index.html", error="Only Amazon, Flipkart and Nykaa URLs are supported!")
 
-    # Scrape product
     result = scrape_direct_url(product_url)
 
     if not result:
         return render_template("index.html", error="Could not get product details! Please check the URL.")
 
-    # Save to database
     product_id = save_product(
         result["name"],
         product_url,
@@ -83,7 +76,6 @@ def track_url():
 
     return redirect(url_for("dashboard"))
 
-# --- Start Tracking from Search Results ---
 @app.route("/track", methods=["POST"])
 def track():
     product_name = request.form.get("product_name")
@@ -106,7 +98,6 @@ def track():
 
     return redirect(url_for("dashboard"))
 
-# --- Dashboard ---
 @app.route("/dashboard")
 def dashboard():
     products = get_all_products()
@@ -139,11 +130,11 @@ def dashboard():
             "target_price": target_price,
             "email": product[5],
             "status": status,
+            "prediction": prediction,
         })
 
     return render_template("dashboard.html", products=product_data)
 
-# --- Product Detail Page ---
 @app.route("/product/<int:product_id>")
 def product_detail(product_id):
     conn = sqlite3.connect(DATABASE_NAME)
@@ -185,7 +176,6 @@ def product_detail(product_id):
 
     return render_template("product.html", product=product_data)
 
-# --- Delete Product ---
 @app.route("/delete/<int:product_id>")
 def delete_product(product_id):
     conn = sqlite3.connect(DATABASE_NAME)
@@ -196,7 +186,12 @@ def delete_product(product_id):
     conn.close()
     return redirect(url_for("dashboard"))
 
-# --- Start Scheduler ---
+@app.route("/update-now")
+def update_now():
+    from scheduler import track_all_products
+    track_all_products()
+    return redirect(url_for("dashboard"))
+
 def run_scheduler():
     scheduler.start_scheduler()
 

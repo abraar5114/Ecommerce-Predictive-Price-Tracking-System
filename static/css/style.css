@@ -469,3 +469,8 @@ nav { display: flex; gap: 8px; }
     margin-top: 50px;
     font-size: 13px;
 }
+/* --- Dashboard Actions --- */
+.dashboard-actions { display: flex; gap: 10px; align-items: center; }
+.dashboard-actions .btn { width: auto; }
+.btn-update { background: #0f766e; color: white; }
+.btn-update:hover { background: #0d9488; }
