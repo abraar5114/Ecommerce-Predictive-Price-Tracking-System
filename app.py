@@ -30,7 +30,6 @@ def search():
 
     results = compare_prices(product_name)
 
-    # Check if any results found
     if not results["amazon"] and not results["flipkart"] and not results["nykaa"]:
         return render_template("index.html", error="No results found! Try different product name.")
 
@@ -183,6 +182,20 @@ def delete_product(product_id):
     conn.commit()
     conn.close()
     return redirect(url_for("dashboard"))
+
+# --- Test Email Route ---
+@app.route("/test-email")
+def test_email():
+    from alerts import send_email
+    result = send_email(
+        "shaikabraar6009@gmail.com",
+        "Test Email — Ecommerce Price Tracker",
+        "<h2>Email is working! ✅</h2><p>Your price tracking system is sending alerts correctly.</p>"
+    )
+    if result:
+        return "Email sent successfully! ✅ Check your inbox.", 200
+    else:
+        return "Email failed! ❌ Check your Gmail app password.", 500
 
 def run_scheduler():
     scheduler.start_scheduler()
