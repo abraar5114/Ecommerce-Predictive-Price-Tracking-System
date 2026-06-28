@@ -142,4 +142,16 @@ def fix_data():
     deleted = cursor.rowcount
     conn.commit()
     conn.close()
-    return f"Cleaned! Deleted bad records. ✅", 200
+    return f"Cleaned! Deleted bad records. ✅", 200@app.route("/fix-data")
+def fix_data():
+    import sqlite3
+    from config import DATABASE_NAME
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    # Delete ALL price history — start completely fresh
+    cursor.execute("DELETE FROM price_history")
+    # Reset current prices to NULL so they get fresh data next scrape
+    cursor.execute("UPDATE products SET current_price = NULL")
+    conn.commit()
+    conn.close()
+    return "All price history cleared! Fresh start. Next scrape in 6 hours. ✅", 200
