@@ -131,3 +131,15 @@ if __name__ == "__main__":
     scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
     scheduler_thread.start()
     app.run(debug=True)
+@app.route("/fix-data")
+def fix_data():
+    import sqlite3
+    from config import DATABASE_NAME
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM price_history WHERE product_id = 1 AND price < 85000")
+    cursor.execute("DELETE FROM price_history WHERE product_id = 5 AND price < 1000")
+    deleted = cursor.rowcount
+    conn.commit()
+    conn.close()
+    return f"Cleaned! Deleted bad records. ✅", 200
